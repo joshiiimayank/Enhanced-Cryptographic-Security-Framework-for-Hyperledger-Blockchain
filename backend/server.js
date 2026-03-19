@@ -17,44 +17,53 @@ res.send("Backend running");
 });
 
 
-app.post("/upload", upload.single("file"), async (req,res)=>{
-
-try{
-
-const fileBuffer = req.file.buffer;
-
-console.log("Step 1: File received");
-
-const encrypted = encryptAES(fileBuffer);
-console.log("Step 2: AES encryption complete");
-
-const hash = hashData(encrypted);
-console.log("Step 3: Hash generated");
-
-const signature = signEdDSA(hash);
-console.log("Step 4: EdDSA signature created");
-
-const tx = addTransaction(hash);
-console.log("Step 5: Hyperledger transaction stored");
-
-const fileId = await uploadFile(encrypted);
-console.log("Step 6: Uploaded to Google Drive");
-
-res.json({
-message:"Upload successful",
-fileId,
-tx
-});
-
-}catch(err){
-
-console.error(err);
-res.status(500).json({error:"Upload failed"});
-
-}
-
-});
-
+app.post("/upload", upload.single("file"), async (req, res) => {
+    try {
+  
+      // ✅ Safety check (prevents crash)
+      if (!req.file) {
+        return res.status(400).json({
+          error: "No file received from frontend"
+        });
+      }
+  
+      console.log("File received:", req.file.originalname);
+  
+      const fileBuffer = req.file.buffer;
+  
+      console.log("Step 1: File received");
+  
+      const encrypted = encryptAES(fileBuffer);
+      console.log("Step 2: AES encryption complete");
+  
+      const hash = hashData(encrypted);
+      console.log("Step 3: Hash generated");
+  
+      const signature = signEdDSA(hash);
+      console.log("Step 4: EdDSA signature created");
+  
+      const tx = addTransaction(hash);
+      console.log("Step 5: Hyperledger transaction stored");
+  
+      const fileId = await uploadFile(encrypted);
+      console.log("Step 6: Uploaded to Google Drive");
+  
+      res.json({
+        message: "Upload successful",
+        fileId,
+        tx
+      });
+  
+    } catch (err) {
+  
+      console.error("UPLOAD ERROR:", err);
+  
+      res.status(500).json({
+        error: err.message
+      });
+  
+    }
+  });
 
 app.get("/files", async(req,res)=>{
 
