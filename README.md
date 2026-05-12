@@ -1,4 +1,4 @@
-# ChainVault — Hyperledger Cryptographic Security Framework
+# Hyperledger Cryptographic Security Framework
 
 A fully animated, enterprise-grade web application implementing the cryptographic security framework from the paper:
 **"An Enhanced Cryptographic Security Framework for Hyperledger Blockchain"**
